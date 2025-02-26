@@ -26,6 +26,8 @@ jobs:
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain checkstyleTest checkstyleTestFixtures
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
   Javadoc:
     runs-on: ubuntu-latest
@@ -34,6 +36,8 @@ jobs:
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - name: Run Javadoc
         run: ./gradlew javadoc
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
   Verify-Identityhub-Launcher:
     runs-on: ubuntu-latest
@@ -43,6 +47,8 @@ jobs:
 
       - name: 'Build launcher'
         run: ./gradlew :launcher:identityhub:shadowJar
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
       - name: 'Build Docker image'
         run: docker build -t identityhub ./launcher/identityhub
@@ -73,6 +79,8 @@ jobs:
 
       - name: 'Build launcher'
         run: ./gradlew :launcher:issuer-service:shadowJar
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
       - name: 'Build Docker image'
         run: docker build -t issuer-service ./launcher/issuer-service
@@ -109,6 +117,7 @@ jobs:
         timeout-minutes: 10
         env:
           INTEGRATION_TEST: true
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
   Integration-Tests:
     runs-on: ubuntu-latest
@@ -118,6 +127,8 @@ jobs:
 
       - name: Component Tests
         run: ./gradlew compileJava compileTestJava test -DincludeTags="ComponentTest,ApiTest,EndToEndTest"
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
   Postgresql-Integration-Tests:
     runs-on: ubuntu-latest
@@ -127,6 +138,8 @@ jobs:
 
       - name: Postgresql Tests
         run: ./gradlew compileJava compileTestJava test -DincludeTags="PostgresqlIntegrationTest"
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
   Verify-OpenApi:
     if: github.event_name == 'pull_request'
