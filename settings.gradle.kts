@@ -12,6 +12,11 @@ pluginManagement {
     }
 }
 
+plugins {
+    id("com.gradle.develocity") version "3.19.2"
+    id("com.gradle.common-custom-user-data-gradle-plugin") version "2.1"
+}
+
 dependencyResolutionManagement {
 
     repositories {
@@ -136,3 +141,30 @@ include(":dist:bom:identityhub-feature-sql-bom")
 include(":dist:bom:issuerservice-base-bom")
 include(":dist:bom:issuerservice-bom")
 include(":dist:bom:issuerservice-feature-sql-bom")
+
+// Develocity
+val isCI = System.getenv("CI") != null // adjust to your CI provider
+
+develocity {
+    server = "https://develocity-staging.eclipse.org"
+    projectId = "technology.edc"
+    buildScan {
+        uploadInBackground = !isCI
+        publishing.onlyIf { it.isAuthenticated }
+        obfuscation {
+            ipAddresses { addresses -> addresses.map { _ -> "0.0.0.0" } }
+        }
+    }
+}
+
+buildCache {
+    local {
+        isEnabled = true
+    }
+
+    remote(develocity.buildCache) {
+        isEnabled = true
+        isPush = isCI
+    }
+}
+
